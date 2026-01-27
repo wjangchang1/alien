@@ -81,3 +81,4 @@ ImFont* StyleRepository::getReefLargeFont() const { return _reefLargeFont; }
 
 float StyleRepository::scale(float value) const { return WindowController::get().getContentScaleFactor() * value; }
 float StyleRepository::scaleInverse(float value) const { return value / WindowController::get().getContentScaleFactor(); }
+
