@@ -37,7 +37,8 @@ void _SimulationParameterLayerWidget::process(ParametersFilter const& filter)
 
 std::string _SimulationParameterLayerWidget::getLocationName()
 {
-    return "Simulation parameters for '" + _layerName + "'";
+    // 'Layer' 설정창의 이름을 한글로 변경합니다.
+    return "'" + _layerName + "' 레이어의 시뮬레이션 설정";
 }
 
 int _SimulationParameterLayerWidget::getOrderNumber() const
