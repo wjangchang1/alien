@@ -41,7 +41,6 @@ SimulationParametersMainWindow::SimulationParametersMainWindow()
 
 void SimulationParametersMainWindow::initIntern()
 {
-
     _masterWidgetOpen = GlobalSettings::get().getValue("windows.simulation parameters.master widget.open", _masterWidgetOpen);
     _detailWidgetOpen = GlobalSettings::get().getValue("windows.simulation parameters.detail widget.open", _detailWidgetOpen);
     _expertWidgetOpen = GlobalSettings::get().getValue("windows.simulation parameters.expert widget.open", _expertWidgetOpen);
@@ -55,7 +54,6 @@ void SimulationParametersMainWindow::initIntern()
     auto layerWidgets = std::make_shared<_SimulationParameterLayerWidget>();
     layerWidgets->init(0);
     _layerWidgets = layerWidgets;
-
 
     auto sourceWidgets = std::make_shared<_SimulationParametersSourceWidgets>();
     sourceWidgets->init(0);
@@ -82,9 +80,9 @@ void SimulationParametersMainWindow::processIntern()
         processExpertWidget();
 
         correctLayout(origMasterHeight, origExpertWidgetHeight);
+        
+        ImGui::EndChild();
     }
-    }
-    ImGui::EndChild();
 
     processStatusBar();
 
@@ -99,7 +97,6 @@ void SimulationParametersMainWindow::shutdownIntern()
     GlobalSettings::get().setValue("windows.simulation parameters.master widget.height", _masterWidgetHeight);
     GlobalSettings::get().setValue("windows.simulation parameters.expert widget height", _expertWidgetHeight);
 }
-
 void SimulationParametersMainWindow::processToolbar()
 {
     if (AlienGui::ToolbarButton(AlienGui::ToolbarButtonParameters().text(ICON_FA_FOLDER_OPEN).tooltip("파일에서 설정 불러오기"))) {
@@ -336,7 +333,6 @@ void SimulationParametersMainWindow::processLocationTable()
                     icon = ICON_FA_SUN " ";
                 }
                 AlienGui::Text(icon + entry.name);
-
 
                 ImGui::TableNextColumn();
                 if (entry.type == LocationType::Base) {
