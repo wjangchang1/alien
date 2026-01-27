@@ -36,7 +36,7 @@ namespace
 }
 
 SimulationParametersMainWindow::SimulationParametersMainWindow()
-    : AlienWindow("Simulation parameters", "windows.simulation parameters", false, true)
+    : AlienWindow("시뮬레이션 설정", "windows.simulation parameters", false, true)
 {}
 
 void SimulationParametersMainWindow::initIntern()
@@ -83,6 +83,7 @@ void SimulationParametersMainWindow::processIntern()
 
         correctLayout(origMasterHeight, origExpertWidgetHeight);
     }
+    }
     ImGui::EndChild();
 
     processStatusBar();
@@ -101,12 +102,12 @@ void SimulationParametersMainWindow::shutdownIntern()
 
 void SimulationParametersMainWindow::processToolbar()
 {
-    if (AlienGui::ToolbarButton(AlienGui::ToolbarButtonParameters().text(ICON_FA_FOLDER_OPEN).tooltip("Open simulation parameters from file"))) {
+    if (AlienGui::ToolbarButton(AlienGui::ToolbarButtonParameters().text(ICON_FA_FOLDER_OPEN).tooltip("파일에서 설정 불러오기"))) {
         onOpenParameters();
     }
 
     ImGui::SameLine();
-    if (AlienGui::ToolbarButton(AlienGui::ToolbarButtonParameters().text(ICON_FA_SAVE).tooltip("Save simulation parameters to file"))) {
+    if (AlienGui::ToolbarButton(AlienGui::ToolbarButtonParameters().text(ICON_FA_SAVE).tooltip("설정을 파일로 저장하기"))) {
         onSaveParameters();
     }
 
@@ -114,17 +115,17 @@ void SimulationParametersMainWindow::processToolbar()
     AlienGui::ToolbarSeparator();
 
     ImGui::SameLine();
-    if (AlienGui::ToolbarButton(AlienGui::ToolbarButtonParameters().text(ICON_FA_COPY).tooltip("Copy simulation parameters to clipboard"))) {
+    if (AlienGui::ToolbarButton(AlienGui::ToolbarButtonParameters().text(ICON_FA_COPY).tooltip("설정을 클립보드에 복사"))) {
         _copiedParameters = _SimulationFacade::get()->getSimulationParameters();
-        printOverlayMessage("Simulation parameters copied");
+        printOverlayMessage("시뮬레이션 설정이 복사되었습니다");
     }
 
     ImGui::SameLine();
     if (AlienGui::ToolbarButton(
-            AlienGui::ToolbarButtonParameters().text(ICON_FA_PASTE).tooltip("Paste simulation parameters from clipboard").disabled(!_copiedParameters))) {
+            AlienGui::ToolbarButtonParameters().text(ICON_FA_PASTE).tooltip("클립보드 설정을 붙여넣기").disabled(!_copiedParameters))) {
         _SimulationFacade::get()->setSimulationParameters(*_copiedParameters);
         _SimulationFacade::get()->setOriginalSimulationParameters(*_copiedParameters);
-        printOverlayMessage("Simulation parameters pasted");
+        printOverlayMessage("시뮬레이션 설정이 붙여넣어졌습니다");
     }
 
     ImGui::SameLine();
@@ -133,16 +134,15 @@ void SimulationParametersMainWindow::processToolbar()
                                     .secondText(ICON_FA_UNDO)
                                     .secondTextOffset(RealVector2D{32.0f, 28.0f})
                                     .secondTextScale(0.3f)
-                                    .tooltip("Replace reference values by values from the clipboard. This is useful to see the diff between the current "
-                                             "parameters and those from the clipboard.")
+                                    .tooltip("기준값을 클립보드의 값으로 교체합니다. 현재 설정과 클립보드 설정 사이의 차이점을 확인하는 데 유용합니다.")
                                     .disabled(!_copiedParameters))) {
         auto parameters = _SimulationFacade::get()->getSimulationParameters();
         if (_copiedParameters->numLayers == parameters.numLayers && _copiedParameters->numSources == parameters.numSources) {
             _SimulationFacade::get()->setOriginalSimulationParameters(*_copiedParameters);
-            printOverlayMessage("Reference simulation parameters replaced");
+            printOverlayMessage("기준 시뮬레이션 설정이 교체되었습니다");
         } else {
             GenericMessageDialog::get().information(
-                "Error", "The number of layers and radiation sources of the current simulation parameters must match with those from the clipboard.");
+                "오류", "현재 설정의 레이어 및 방사능 광원 개수가 클립보드와 일치해야 합니다.");
         }
     }
 
@@ -150,12 +150,12 @@ void SimulationParametersMainWindow::processToolbar()
     AlienGui::ToolbarSeparator();
 
     ImGui::SameLine();
-    if (AlienGui::ToolbarButton(AlienGui::ToolbarButtonParameters().text(ICON_FA_PLUS).secondText(ICON_FA_LAYER_GROUP).tooltip("Add parameter layer"))) {
+    if (AlienGui::ToolbarButton(AlienGui::ToolbarButtonParameters().text(ICON_FA_PLUS).secondText(ICON_FA_LAYER_GROUP).tooltip("파라미터 레이어 추가"))) {
         onInsertDefaultLayer();
     }
 
     ImGui::SameLine();
-    if (AlienGui::ToolbarButton(AlienGui::ToolbarButtonParameters().text(ICON_FA_PLUS).secondText(ICON_FA_SUN).tooltip("Add radiation source"))) {
+    if (AlienGui::ToolbarButton(AlienGui::ToolbarButtonParameters().text(ICON_FA_PLUS).secondText(ICON_FA_SUN).tooltip("방사능 광원 추가"))) {
         onInsertDefaultSource();
     }
 
@@ -164,13 +164,13 @@ void SimulationParametersMainWindow::processToolbar()
                                     .text(ICON_FA_PLUS)
                                     .secondText(ICON_FA_CLONE)
                                     .disabled(_selectedOrderNumber == 0)
-                                    .tooltip("Clone selected layer/radiation source"))) {
+                                    .tooltip("선택한 레이어/광원 복제"))) {
         onCloneLocation();
     }
 
     ImGui::SameLine();
     if (AlienGui::ToolbarButton(
-            AlienGui::ToolbarButtonParameters().text(ICON_FA_MINUS).disabled(_selectedOrderNumber == 0).tooltip("Delete selected layer/radiation source"))) {
+            AlienGui::ToolbarButtonParameters().text(ICON_FA_MINUS).disabled(_selectedOrderNumber == 0).tooltip("선택한 레이어/광원 삭제"))) {
         onDeleteLocation();
     }
 
@@ -181,14 +181,14 @@ void SimulationParametersMainWindow::processToolbar()
     if (AlienGui::ToolbarButton(AlienGui::ToolbarButtonParameters()
                                     .text(ICON_FA_CHEVRON_UP)
                                     .disabled(_selectedOrderNumber <= 1)
-                                    .tooltip("Move selected layer/radiation source upward"))) {
+                                    .tooltip("선택한 레이어/광원을 위로 이동"))) {
         onDecreaseOrderNumber();
     }
 
     ImGui::SameLine();
     if (AlienGui::ToolbarButton(AlienGui::ToolbarButtonParameters()
                                     .text(ICON_FA_CHEVRON_DOWN)
-                                    .tooltip("Move selected layer/radiation source downward")
+                                    .tooltip("선택한 레이어/광원을 아래로 이동")
                                     .disabled(_selectedOrderNumber >= _locations.size() - 1 || _selectedOrderNumber == 0))) {
         onIncreaseOrderNumber();
     }
@@ -199,7 +199,7 @@ void SimulationParametersMainWindow::processToolbar()
     ImGui::SameLine();
     if (AlienGui::ToolbarButton(AlienGui::ToolbarButtonParameters()
                                     .text(ICON_FA_EXTERNAL_LINK_SQUARE_ALT)
-                                    .tooltip("Open parameters for selected layer/radiation source in a new window"))) {
+                                    .tooltip("선택한 레이어/광원의 설정을 새 창에서 열기"))) {
         onOpenInLocationWindow();
     }
 
@@ -211,7 +211,7 @@ void SimulationParametersMainWindow::processMasterWidget()
     if (ImGui::BeginChild("##master", {0, getMasterWidgetHeight()})) {
 
         if (_masterWidgetOpen =
-                AlienGui::BeginTreeNode(AlienGui::TreeNodeParameters().name("Overview").rank(AlienGui::TreeNodeRank::High).defaultOpen(_masterWidgetOpen))) {
+                AlienGui::BeginTreeNode(AlienGui::TreeNodeParameters().name("전체 개요").rank(AlienGui::TreeNodeRank::High).defaultOpen(_masterWidgetOpen))) {
             ImGui::Spacing();
             if (ImGui::BeginChild("##master2", {0, -ImGui::GetStyle().FramePadding.y})) {
                 processLocationTable();
@@ -233,13 +233,12 @@ void SimulationParametersMainWindow::processDetailWidget()
 {
     auto height = getDetailWidgetHeight();
     if (ImGui::BeginChild("##detail", {0, height})) {
-        auto title = _filter.empty() ? "Parameters" : "Parameters (filtered)";
+        auto title = _filter.empty() ? "세부 설정" : "세부 설정 (필터링됨)";
         if (_detailWidgetOpen = AlienGui::BeginTreeNode(AlienGui::TreeNodeParameters()
                                                             .name((std::string(title) + "###parameters").c_str())
                                                             .rank(AlienGui::TreeNodeRank::High)
                                                             .defaultOpen(_detailWidgetOpen))) {
             ImGui::Spacing();
-            //AlienGui::SetFilterText(_filter);
             if (ImGui::BeginChild(
                     "##detail2", {0, -ImGui::GetStyle().FramePadding.y - scale(33.0f)}, ImGuiChildFlags_Border, ImGuiWindowFlags_HorizontalScrollbar)) {
                 auto type = _locations.at(_selectedOrderNumber).type;
@@ -255,7 +254,6 @@ void SimulationParametersMainWindow::processDetailWidget()
                 }
             }
             ImGui::EndChild();
-            //AlienGui::ResetFilterText();
 
             ImGui::Spacing();
             AlienGui::InputFilter(AlienGui::InputFilterParameters().width(250.0f), _filter);
@@ -275,7 +273,7 @@ void SimulationParametersMainWindow::processExpertWidget()
 {
     if (ImGui::BeginChild("##expert", {0, 0})) {
         if (_expertWidgetOpen = AlienGui::BeginTreeNode(
-                AlienGui::TreeNodeParameters().name("Expert settings").rank(AlienGui::TreeNodeRank::High).defaultOpen(_expertWidgetOpen))) {
+                AlienGui::TreeNodeParameters().name("전문가 설정").rank(AlienGui::TreeNodeRank::High).defaultOpen(_expertWidgetOpen))) {
             if (ImGui::BeginChild("##expert2", {0, 0}, ImGuiChildFlags_Border, ImGuiWindowFlags_HorizontalScrollbar)) {
                 processExpertSettings();
             }
@@ -289,7 +287,7 @@ void SimulationParametersMainWindow::processExpertWidget()
 void SimulationParametersMainWindow::processStatusBar()
 {
     std::vector<std::string> statusItems;
-    statusItems.emplace_back("CTRL + click on a slider to type in a precise value");
+    statusItems.emplace_back("정확한 값을 입력하려면 슬라이더를 CTRL + 클릭하세요");
 
     AlienGui::StatusBar(statusItems);
 }
@@ -301,11 +299,11 @@ void SimulationParametersMainWindow::processLocationTable()
 
     if (ImGui::BeginTable("Locations", 5, flags, ImVec2(-1, -1), 0)) {
 
-        ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_WidthFixed, scale(140.0f));
-        ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_WidthFixed, scale(140.0f));
-        ImGui::TableSetupColumn("Position", ImGuiTableColumnFlags_DefaultSort | ImGuiTableColumnFlags_WidthFixed, scale(115.0f));
-        ImGui::TableSetupColumn("Strength", ImGuiTableColumnFlags_DefaultSort | ImGuiTableColumnFlags_WidthFixed, scale(90.0f));
-        ImGui::TableSetupColumn("Opacity", ImGuiTableColumnFlags_DefaultSort | ImGuiTableColumnFlags_WidthFixed, scale(90.0f));
+        ImGui::TableSetupColumn("이름", ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_WidthFixed, scale(140.0f));
+        ImGui::TableSetupColumn("유형", ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_WidthFixed, scale(140.0f));
+        ImGui::TableSetupColumn("위치", ImGuiTableColumnFlags_DefaultSort | ImGuiTableColumnFlags_WidthFixed, scale(115.0f));
+        ImGui::TableSetupColumn("강도", ImGuiTableColumnFlags_DefaultSort | ImGuiTableColumnFlags_WidthFixed, scale(90.0f));
+        ImGui::TableSetupColumn("불투명도", ImGuiTableColumnFlags_DefaultSort | ImGuiTableColumnFlags_WidthFixed, scale(90.0f));
         ImGui::TableSetupScrollFreeze(0, 1);
         ImGui::TableHeadersRow();
         ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, Const::TableHeaderColor);
@@ -319,7 +317,6 @@ void SimulationParametersMainWindow::processLocationTable()
                 ImGui::PushID(row);
                 ImGui::TableNextRow(0, scale(MasterRowHeight));
 
-                // Column: Name
                 ImGui::TableNextColumn();
                 auto selected = _selectedOrderNumber == row;
                 if (ImGui::Selectable(
@@ -341,17 +338,15 @@ void SimulationParametersMainWindow::processLocationTable()
                 AlienGui::Text(icon + entry.name);
 
 
-                // Column: Type
                 ImGui::TableNextColumn();
                 if (entry.type == LocationType::Base) {
-                    AlienGui::Text("Base parameters");
+                    AlienGui::Text("기본 파라미터");
                 } else if (entry.type == LocationType::Layer) {
-                    AlienGui::Text("Layer");
+                    AlienGui::Text("레이어");
                 } else if (entry.type == LocationType::Source) {
-                    AlienGui::Text("Radiation");
+                    AlienGui::Text("방사능 광원");
                 }
 
-                // Column: Position
                 ImGui::TableNextColumn();
                 if (row > 0) {
                     if (AlienGui::ActionButton(AlienGui::ActionButtonParameters().buttonText(ICON_FA_SEARCH))) {
@@ -362,7 +357,6 @@ void SimulationParametersMainWindow::processLocationTable()
                 }
                 AlienGui::Text(entry.position);
 
-                // Column: Strength
                 ImGui::TableNextColumn();
                 if (entry.type == LocationType::Base || entry.type == LocationType::Source) {
                     AlienGui::Text(entry.strength);
@@ -370,7 +364,6 @@ void SimulationParametersMainWindow::processLocationTable()
                     AlienGui::Text("-");
                 }
 
-                // Column: Opacity
                 ImGui::TableNextColumn();
                 if (entry.type == LocationType::Layer) {
                     AlienGui::Text(entry.strength);
@@ -401,14 +394,14 @@ void SimulationParametersMainWindow::processExpertSettings()
 void SimulationParametersMainWindow::onOpenParameters()
 {
     GenericFileDialog::get().showOpenFileDialog(
-        "Open simulation parameters", "Simulation parameters (*.parameters){.parameters},.*", _fileDialogPath, [&](std::filesystem::path const& path) {
+        "시뮬레이션 설정 불러오기", "Simulation parameters (*.parameters){.parameters},.*", _fileDialogPath, [&](std::filesystem::path const& path) {
             auto firstFilename = ifd::FileDialog::Instance().GetResult();
             auto firstFilenameCopy = firstFilename;
             _fileDialogPath = firstFilenameCopy.remove_filename().string();
 
             SimulationParameters parameters;
             if (!SerializerService::get().deserializeSimulationParametersFromFile(parameters, firstFilename.string())) {
-                GenericMessageDialog::get().information("Open simulation parameters", "The selected file could not be opened.");
+                GenericMessageDialog::get().information("시뮬레이션 설정 불러오기", "선택한 파일을 열 수 없습니다.");
             } else {
                 _SimulationFacade::get()->setSimulationParameters(parameters);
                 _SimulationFacade::get()->setOriginalSimulationParameters(parameters);
@@ -419,14 +412,14 @@ void SimulationParametersMainWindow::onOpenParameters()
 void SimulationParametersMainWindow::onSaveParameters()
 {
     GenericFileDialog::get().showSaveFileDialog(
-        "Save simulation parameters", "Simulation parameters (*.parameters){.parameters},.*", _fileDialogPath, [&](std::filesystem::path const& path) {
+        "시뮬레이션 설정 저장하기", "Simulation parameters (*.parameters){.parameters},.*", _fileDialogPath, [&](std::filesystem::path const& path) {
             auto firstFilename = ifd::FileDialog::Instance().GetResult();
             auto firstFilenameCopy = firstFilename;
             _fileDialogPath = firstFilenameCopy.remove_filename().string();
 
             auto parameters = _SimulationFacade::get()->getSimulationParameters();
             if (!SerializerService::get().serializeSimulationParametersToFile(firstFilename.string(), parameters)) {
-                GenericMessageDialog::get().information("Save simulation parameters", "The selected file could not be saved.");
+                GenericMessageDialog::get().information("시뮬레이션 설정 저장하기", "선택한 파일을 저장할 수 없습니다.");
             }
         });
 }
@@ -634,7 +627,7 @@ void SimulationParametersMainWindow::updateLocations()
     _locations = std::vector<Location>(1 + parameters.numLayers + parameters.numSources);
     auto radiationStrength = ParametersEditService::get().getRadiationStrengths(parameters);
     auto pinnedString = radiationStrength.pinned.contains(0) ? ICON_FA_THUMBTACK " " : " ";
-    _locations.at(0) = Location{"Base", LocationType::Base, "-", pinnedString + StringHelper::format(radiationStrength.values.front() * 100 + 0.05f, 1) + "%"};
+    _locations.at(0) = Location{"기본", LocationType::Base, "-", pinnedString + StringHelper::format(radiationStrength.values.front() * 100 + 0.05f, 1) + "%"};
     for (int i = 0; i < parameters.numLayers; ++i) {
         auto position = "(" + StringHelper::format(parameters.layerPosition.layerValues[i].x, 0) + ", "
             + StringHelper::format(parameters.layerPosition.layerValues[i].y, 0) + ")";
@@ -669,7 +662,7 @@ void SimulationParametersMainWindow::correctLayout(float origMasterHeight, float
 bool SimulationParametersMainWindow::checkNumLayers(SimulationParameters const& parameters)
 {
     if (parameters.numLayers == MAX_LAYERS) {
-        showMessage("Error", "The maximum number of layers has been reached.");
+        showMessage("오류", "레이어 최대 개수에 도달했습니다.");
         return false;
     }
     return true;
@@ -678,7 +671,7 @@ bool SimulationParametersMainWindow::checkNumLayers(SimulationParameters const& 
 bool SimulationParametersMainWindow::checkNumSources(SimulationParameters const& parameters)
 {
     if (parameters.numSources == MAX_SOURCES) {
-        showMessage("Error", "The maximum number of radiation sources has been reached.");
+        showMessage("오류", "방사능 광원 최대 개수에 도달했습니다.");
         return false;
     }
     return true;
