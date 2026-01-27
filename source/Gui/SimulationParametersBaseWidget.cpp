@@ -29,7 +29,8 @@ void _SimulationParametersBaseWidget::process(ParametersFilter const& filter)
 
 std::string _SimulationParametersBaseWidget::getLocationName()
 {
-    return "Simulation parameters for 'Base'";
+    // 'Base' 영역의 이름을 한글로 변경합니다.
+    return "기본 구역의 시뮬레이션 설정";
 }
 
 int _SimulationParametersBaseWidget::getOrderNumber() const
