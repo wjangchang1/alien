@@ -11,7 +11,6 @@
 
 void _SimulationParametersSourceWidgets::init(int orderNumber)
 {
-
     _orderNumber = orderNumber;
 }
 
@@ -39,7 +38,8 @@ void _SimulationParametersSourceWidgets::process(ParametersFilter const& filter)
 
 std::string _SimulationParametersSourceWidgets::getLocationName()
 {
-    return "Simulation parameters for '" + _sourceName + "'";
+    // 'Source' 설정창의 이름을 한글로 변경합니다.
+    return "'" + _sourceName + "' 광원의 시뮬레이션 설정";
 }
 
 int _SimulationParametersSourceWidgets::getOrderNumber() const
