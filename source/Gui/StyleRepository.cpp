@@ -37,27 +37,22 @@ void StyleRepository::setup()
 
     ImGuiIO& io = ImGui::GetIO();
 
-    //default font (small with icons)
-    io.Fonts->AddFontFromMemoryCompressedTTF(DroidSans_compressed_data, DroidSans_compressed_size, 16.0f * scaleFactor);
+    // 한글 폰트 범위를 설정합니다.
+    auto koreanRanges = io.Fonts->GetGlyphRangesKorean();
+
+    // 기본 폰트 설정
+    io.Fonts->AddFontFromMemoryCompressedTTF(DroidSans_compressed_data, DroidSans_compressed_size, 16.0f * scaleFactor, nullptr, koreanRanges);
     {
         static const ImWchar rangesIcons[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
         io.Fonts->AddFontFromMemoryCompressedTTF(
             FontAwesomeSolid_compressed_data, FontAwesomeSolid_compressed_size, 16.0f * scaleFactor, &configMerge, rangesIcons);
     }
 
-    //small bold font
-    _smallBoldFont = io.Fonts->AddFontFromMemoryCompressedTTF(DroidSansBold_compressed_data, DroidSansBold_compressed_size, 16.0f * scaleFactor);
+    _smallBoldFont = io.Fonts->AddFontFromMemoryCompressedTTF(DroidSansBold_compressed_data, DroidSansBold_compressed_size, 16.0f * scaleFactor, nullptr, koreanRanges);
+    _mediumBoldFont = io.Fonts->AddFontFromMemoryCompressedTTF(DroidSansBold_compressed_data, DroidSansBold_compressed_size, 24.0f * scaleFactor, nullptr, koreanRanges);
+    _mediumFont = io.Fonts->AddFontFromMemoryCompressedTTF(DroidSans_compressed_data, DroidSans_compressed_size, 24.0f * scaleFactor, nullptr, koreanRanges);
+    _largeFont = io.Fonts->AddFontFromMemoryCompressedTTF(DroidSans_compressed_data, DroidSans_compressed_size, 48.0f * scaleFactor, nullptr, koreanRanges);
 
-    //medium bold font
-    _mediumBoldFont = io.Fonts->AddFontFromMemoryCompressedTTF(DroidSansBold_compressed_data, DroidSansBold_compressed_size, 24.0f * scaleFactor);
-
-    //medium font
-    _mediumFont = io.Fonts->AddFontFromMemoryCompressedTTF(DroidSans_compressed_data, DroidSans_compressed_size, 24.0f * scaleFactor);
-
-    //large font
-    _largeFont = io.Fonts->AddFontFromMemoryCompressedTTF(DroidSans_compressed_data, DroidSans_compressed_size, 48.0f * scaleFactor);
-
-    //icon font
     _iconFont = io.Fonts->AddFontFromMemoryCompressedTTF(AlienIconFont_compressed_data, AlienIconFont_compressed_size, 24.0f * scaleFactor);
     {
         static const ImWchar rangesIcons[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
@@ -66,72 +61,23 @@ void StyleRepository::setup()
         io.Fonts->Build();
     }
 
-    //monospace medium font
     _monospaceMediumFont = io.Fonts->AddFontFromMemoryCompressedTTF(Cousine_Regular_compressed_data, Cousine_Regular_compressed_size, 14.0f * scaleFactor);
-
-    //monospace large font
     _monospaceLargeFont = io.Fonts->AddFontFromMemoryCompressedTTF(Cousine_Regular_compressed_data, Cousine_Regular_compressed_size, 128.0f * scaleFactor);
 
     _reefMediumFont = io.Fonts->AddFontFromMemoryCompressedTTF(Reef_compressed_data, Reef_compressed_size, 24.0f * scaleFactor);
     _reefLargeFont = io.Fonts->AddFontFromMemoryCompressedTTF(Reef_compressed_data, Reef_compressed_size, 64.0f * scaleFactor);
 }
 
-ImFont* StyleRepository::getIconFont() const
-{
-    return _iconFont;
-}
+ImFont* StyleRepository::getIconFont() const { return _iconFont; }
+ImFont* StyleRepository::getDefaultFont() const { return ImGui::GetIO().Fonts->Fonts[0]; }
+ImFont* StyleRepository::getSmallBoldFont() const { return _smallBoldFont; }
+ImFont* StyleRepository::getMediumBoldFont() const { return _mediumBoldFont; }
+ImFont* StyleRepository::getMediumFont() const { return _mediumFont; }
+ImFont* StyleRepository::getLargeFont() const { return _largeFont; }
+ImFont* StyleRepository::getMonospaceMediumFont() const { return _monospaceMediumFont; }
+ImFont* StyleRepository::getMonospaceLargeFont() const { return _monospaceLargeFont; }
+ImFont* StyleRepository::getReefMediumFont() const { return _reefMediumFont; }
+ImFont* StyleRepository::getReefLargeFont() const { return _reefLargeFont; }
 
-ImFont* StyleRepository::getDefaultFont() const
-{
-    return ImGui::GetIO().Fonts->Fonts[0];
-}
-
-ImFont* StyleRepository::getSmallBoldFont() const
-{
-    return _smallBoldFont;
-}
-
-ImFont* StyleRepository::getMediumBoldFont() const
-{
-    return _mediumBoldFont;
-}
-
-ImFont* StyleRepository::getMediumFont() const
-{
-    return _mediumFont;
-}
-
-ImFont* StyleRepository::getLargeFont() const
-{
-    return _largeFont;
-}
-
-ImFont* StyleRepository::getMonospaceMediumFont() const
-{
-    return _monospaceMediumFont;
-}
-
-ImFont* StyleRepository::getMonospaceLargeFont() const
-{
-    return _monospaceLargeFont;
-}
-
-ImFont* StyleRepository::getReefMediumFont() const
-{
-    return _reefMediumFont;
-}
-
-ImFont* StyleRepository::getReefLargeFont() const
-{
-    return _reefLargeFont;
-}
-
-float StyleRepository::scale(float value) const
-{
-    return WindowController::get().getContentScaleFactor() * value;
-}
-
-float StyleRepository::scaleInverse(float value) const
-{
-    return value / WindowController::get().getContentScaleFactor();
-}
+float StyleRepository::scale(float value) const { return WindowController::get().getContentScaleFactor() * value; }
+float StyleRepository::scaleInverse(float value) const { return value / WindowController::get().getContentScaleFactor(); }
