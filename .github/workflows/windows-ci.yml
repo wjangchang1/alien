@@ -19,7 +19,7 @@ jobs:
       with:
         submodules: recursive
     
-    # 1. CUDA 툴킷 설치 (이게 핵심입니다!)
+    # 1. CUDA 툴킷 설치 (버전 12.1 고정)
     - name: Install CUDA Toolkit
       uses: Jimver/cuda-toolkit@v0.2.21
       with:
@@ -40,20 +40,22 @@ jobs:
         .\bootstrap-vcpkg.bat -disableMetrics
         Pop-Location
 
-    # 2. CMake 설정 (CUDA 경로를 수동으로 지정해줍니다)
+    # 2. CMake 설정 (호환성 에러 방지 옵션 추가 완료)
     - name: Configure CMake
       shell: pwsh
       run: |
         cmake -S . -B build `
           -DCMAKE_TOOLCHAIN_FILE="external\vcpkg\scripts\buildsystems\vcpkg.cmake" `
           -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} `
-          -DCMAKE_CUDA_COMPILER="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\bin\nvcc.exe"
+          -DCMAKE_CUDA_COMPILER="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\bin\nvcc.exe" `
+          -DCMAKE_CUDA_FLAGS="-allow-unsupported-compiler"
 
+    # 3. 실제 빌드 진행
     - name: Build
       shell: pwsh
       run: cmake --build build --config ${{ env.BUILD_TYPE }} -j 4
 
-    # 3. 결과물 저장 (성공하면 여기서 다운로드!)
+    # 4. 결과물 저장 (성공 시 Artifacts 탭에 생성됨)
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
