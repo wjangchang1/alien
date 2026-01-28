@@ -1,10 +1,13 @@
-name: windows-ci
+name: CMake (Windows)
 
 on:
   push:
-    branches: [ "develop", "master" ]
+    branches: [ develop ]
   pull_request:
-    branches: [ "develop", "master" ]
+    branches: [ develop ]
+
+env:
+  BUILD_TYPE: Release
 
 jobs:
   build:
@@ -15,30 +18,36 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Install CUDA Toolkit
+    - name: Install CUDA Toolkit 12.1
       uses: Jimver/cuda-toolkit@v0.2.21
       with:
-        cuda: '12.4.1'
+        cuda: '12.1.0'
 
-    - name: Unshallow and Bootstrap
+    - name: Bootstrap vcpkg
+      shell: pwsh
       run: |
-        git -C external/vcpkg fetch --unshallow
-        ./external/vcpkg/bootstrap-vcpkg.bat
+        cd external/vcpkg
+        git fetch --unshallow
+        ./bootstrap-vcpkg.bat
 
     - name: Configure CMake
-      run: "cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=external/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows -DENABLE_CUDA=ON -DCMAKE_CUDA_FLAGS='-allow-unsupported-compiler'"
+      shell: pwsh
+      run: |
+        cmake -S . -B build `
+          -DCMAKE_TOOLCHAIN_FILE="external/vcpkg/scripts/buildsystems/vcpkg.cmake" `
+          -DVCPKG_TARGET_TRIPLET=x64-windows `
+          -DENABLE_CUDA=ON `
+          -DCMAKE_CUDA_FLAGS="-allow-unsupported-compiler"
 
     - name: Build
-      run: cmake --build build --config Release
+      shell: pwsh
+      run: cmake --build build --config ${{ env.BUILD_TYPE }} -j 1
 
-    - name: Copy CUDA DLL to Release
-      run: |
-        copy \"C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v12.4\\bin\\cudart64_12.dll\" \"build\\Release\\\"
-
-    - name: Upload artifact
+    - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: alien-han-full-package
+        name: alien-windows-x64-complete
         path: |
-          build/Release/
+          build/${{ env.BUILD_TYPE }}/*.exe
+          build/${{ env.BUILD_TYPE }}/*.dll
           build/vcpkg_installed/x64-windows/bin/*.dll
