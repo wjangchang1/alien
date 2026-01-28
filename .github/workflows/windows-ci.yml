@@ -27,11 +27,7 @@ jobs:
       run: external/vcpkg/bootstrap-vcpkg.bat
 
     - name: Configure CMake
-      run: |
-        cmake -B build -S . `
-          -DCMAKE_TOOLCHAIN_FILE=external/vcpkg/scripts/buildsystems/vcpkg.cmake `
-          -DVCPKG_TARGET_TRIPLET=x64-windows `
-          -DENABLE_CUDA=ON
+      run: cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=external/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows -DENABLE_CUDA=ON
 
     - name: Build
       run: cmake --build build --config Release
