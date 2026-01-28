@@ -26,13 +26,18 @@ jobs:
         ./external/vcpkg/bootstrap-vcpkg.bat
 
     - name: Configure CMake
-      run: cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=external/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows -DENABLE_CUDA=ON
+      run: >
+        cmake -B build -S .
+        -DCMAKE_TOOLCHAIN_FILE=external/vcpkg/scripts/buildsystems/vcpkg.cmake
+        -DVCPKG_TARGET_TRIPLET=x64-windows
+        -DENABLE_CUDA=ON
 
     - name: Build
       run: cmake --build build --config Release
 
     - name: Copy CUDA DLL to Release
-      run: copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\bin\cudart64_12.dll" "build\Release\"
+      run: |
+        copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\bin\cudart64_12.dll" "build\Release\"
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
