@@ -20,14 +20,18 @@ jobs:
       with:
         cuda: '12.4.1'
 
-    - name: Unshallow vcpkg submodule
-      run: git -C external/vcpkg fetch --unshallow
-
-    - name: Bootstrap vcpkg
-      run: external/vcpkg/bootstrap-vcpkg.bat
+    - name: Unshallow and Bootstrap
+      run: |
+        git -C external/vcpkg fetch --unshallow
+        ./external/vcpkg/bootstrap-vcpkg.bat
 
     - name: Configure CMake
-      run: cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=external/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows -DENABLE_CUDA=ON
+      shell: bash
+      run: |
+        cmake -B build -S . \
+          -DCMAKE_TOOLCHAIN_FILE="external/vcpkg/scripts/buildsystems/vcpkg.cmake" \
+          -DVCPKG_TARGET_TRIPLET="x64-windows" \
+          -DENABLE_CUDA=ON
 
     - name: Build
       run: cmake --build build --config Release
@@ -37,7 +41,7 @@ jobs:
       with:
         name: alien-han-full-package
         path: |
-          D:/a/alien/alien/build/Release/*.exe
-          D:/a/alien/alien/build/Release/*.dll
-          D:/a/alien/alien/build/vcpkg_installed/x64-windows/bin/*.dll
+          build/Release/*.exe
+          build/Release/*.dll
+          build/vcpkg_installed/x64-windows/bin/*.dll
           C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.4/bin/cudart64_12.dll
